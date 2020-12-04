@@ -113,7 +113,7 @@ function AddDeckScreen({ navigation }) {
   const addDeck = async () => {
     await saveDeckTitle(deckName);
     setDeckName('');
-    navigation.navigate('DecksStack')
+    navigation.navigate('Details', { id: deckName })
   }
   const Title = styled.Text`
     font-size: 18px
@@ -168,6 +168,7 @@ function AddDeckStackScreen() {
   return (
     <AddDeckStack.Navigator>
       <AddDeckStack.Screen name="New Deck" component={AddDeckScreen} />
+      <DecksListStack.Screen name="Details" component={DetailsScreen} />
     </AddDeckStack.Navigator>
   );
 }
