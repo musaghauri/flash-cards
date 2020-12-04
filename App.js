@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styled from "styled-components/native";
 import PressableButton from './components/PressableButton';
-import { getDecks, getDeck, saveDeckTitle } from './utils/api';
+import { getDecks, getDeck, saveDeckTitle, addCardToDeck } from './utils/api';
 const Container = styled.View`
 	background: #fff;
 	height: auto;
@@ -50,7 +50,7 @@ const Card = (deck) => {
 };
 
 
-function DetailsScreen ({ route, navigation }) {
+function DetailsScreen({ route, navigation }) {
   const [deck, setDeck] = useState({});
   const { id } = route.params
   // console.log("deckdeckdeck",id, deck)
@@ -62,12 +62,27 @@ function DetailsScreen ({ route, navigation }) {
   useEffect(() => {
     loadDecks();
   }, []);
+
+  useEffect(() => {
+    // Interval to update count
+   
+    // Subscribe for the focus Listener
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadDecks();
+    });
+
+    return () => {
+      // Unsubscribe for the focus Listener
+      unsubscribe;
+    };
+  }, [navigation]);
+
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>{deck.title}</Text>
-      <Text>{deck?.questions?.length} Cards</Text> 
+      <Text>{deck?.questions?.length} Cards</Text>
       <PressableButton
-        onPress={() => true}
+        onPress={() => navigation.navigate("AddCard", { title: deck.title })}
         title='Add Card'
       />
       <PressableButton
@@ -93,11 +108,25 @@ function DecksListScreen({ navigation }) {
     loadDecks();
   }, [])
 
+  useEffect(() => {
+    // Interval to update count
+   
+    // Subscribe for the focus Listener
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadDecks();
+    });
+
+    return () => {
+      // Unsubscribe for the focus Listener
+      unsubscribe;
+    };
+  }, [navigation]);
+  
   const DECKS = [];
   _forOwn(decks, (val, key) => {
     DECKS.push(<Card key={`deck_${key}`} {...val} />)
   });
-  
+
   return (
     <View >
       <ScrollView>
@@ -132,7 +161,7 @@ function AddDeckScreen({ navigation }) {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Title>What is the title of your new Deck?</Title>
             <TextField value={deckName} onChangeText={text => setDeckName(text)} placeholder="Deck Title" />
@@ -151,13 +180,62 @@ function AddDeckScreen({ navigation }) {
   );
 }
 
+
+function AddCardScreen({ route, navigation }) {
+  const { title } = route.params;
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+
+  const addCard = async () => {
+    await addCardToDeck(title, { question, answer });
+    navigation.goBack()
+  }
+  const Title = styled.Text`
+    font-size: 18px
+  `;
+
+  const TextField = styled.TextInput`
+    height: 40px;
+    border-color: #000000;
+    border-width: 1px;
+    width: 100%;
+    border-radius: 3px;
+    margin: 12px 0;
+  `;
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+      >
+        <TouchableWithoutFeedback>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Title>Add Card to {title}</Title>
+            <TextField value={question} onChangeText={text => setQuestion(text)} placeholder="Card Question" />
+            <TextField value={answer} onChangeText={text => setAnswer(text)} placeholder="Card Answer" />
+            <View>
+              <PressableButton
+                onPress={addCard}
+                title='Submit'
+                bgColor="black"
+                color="white"
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </View>
+  );
+}
+
+
 const DecksListStack = createStackNavigator();
 
 function DecksListStackScreen() {
   return (
     <DecksListStack.Navigator>
-      <DecksListStack.Screen name="Decks" component={DecksListScreen} />
-      <DecksListStack.Screen name="Details" component={DetailsScreen} />
+      <DecksListStack.Screen options={{ unmountOnBlur: true }} name="Decks" component={DecksListScreen} />
+      <DecksListStack.Screen options={{ unmountOnBlur: true }} name="Details" component={DetailsScreen} />
+      <DecksListStack.Screen options={{ unmountOnBlur: true }} name="AddCard" component={AddCardScreen} />
     </DecksListStack.Navigator>
   );
 }
