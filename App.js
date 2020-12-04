@@ -3,16 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { setLocalNotification } from './utils/helpers';
+import { FontAwesome, Ionicons } from '@expo/vector-icons'
 
 import StartQuizScreen from './components/StartQuiz'
 import DetailsScreen from './components/DeckDetails'
 import DecksListScreen from './components/DecksList'
 import AddDeckScreen from './components/AddDeck'
 import AddCardScreen from './components/AddCard'
-
-
-
-
 
 
 const DecksListStack = createStackNavigator();
@@ -48,8 +45,24 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen options={{ unmountOnBlur: true }} name="DecksStack" component={DecksListStackScreen} />
-        <Tab.Screen options={{ unmountOnBlur: true }} name="NewDeckStack" component={AddDeckStackScreen} />
+        <Tab.Screen 
+          options={{
+            unmountOnBlur: true,
+            tabBarLabel: 'Decks',
+            tabBarIcon: ({ tintColor }) => <Ionicons name='ios-bookmarks' size={30} color={tintColor} />
+          }}
+          name="DecksStack" 
+          component={DecksListStackScreen} 
+        />
+        <Tab.Screen 
+          options={{ 
+            unmountOnBlur: true,
+            tabBarLabel: 'New Deck',
+            tabBarIcon: ({ tintColor }) => <FontAwesome name='plus-square' size={30} color={tintColor} />
+          }} 
+          name="NewDeckStack" 
+          component={AddDeckStackScreen} 
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
