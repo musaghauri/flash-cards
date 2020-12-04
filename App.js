@@ -50,15 +50,22 @@ const Card = (deck) => {
 };
 
 
-function DetailsScreen({ route, navigation }) {
-  // const navigation = useNavigationState(s => s);
+function DetailsScreen ({ route, navigation }) {
+  const [deck, setDeck] = useState({});
   const { id } = route.params
-  const deck = getDeck(id);
-  // console.log({ deck })
+  // console.log("deckdeckdeck",id, deck)
+  const loadDecks = async () => {
+    let fetchedDeck = await getDeck(id);
+    setDeck(fetchedDeck);
+  }
+
+  useEffect(() => {
+    loadDecks();
+  }, []);
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>{deck.title}</Text>
-      <Text>{deck?.questions?.length} Cards</Text>
+      <Text>{deck?.questions?.length} Cards</Text> 
       <PressableButton
         onPress={() => true}
         title='Add Card'
@@ -171,8 +178,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen options={{ unmountOnBlur: true }}  name="DecksStack" component={DecksListStackScreen} />
-        <Tab.Screen name="NewDeckStack" component={AddDeckStackScreen} />
+        <Tab.Screen options={{ unmountOnBlur: true }} name="DecksStack" component={DecksListStackScreen} />
+        <Tab.Screen options={{ unmountOnBlur: true }} name="NewDeckStack" component={AddDeckStackScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

@@ -4,9 +4,9 @@ import { FLASH_CARDS_STORAGE_KEY } from './_flashcards'
 // get Decks
 export const getDecks = () => AsyncStorage.getItem(FLASH_CARDS_STORAGE_KEY);
 // get Deck
-export function getDeck (id) {
-    return AsyncStorage.getItem(FLASH_CARDS_STORAGE_KEY)
-      .then(results => JSON.parse(results)[id])
+export const getDeck = async (id) => {
+    const decks = await AsyncStorage.getItem(FLASH_CARDS_STORAGE_KEY)
+    return JSON.parse(decks)[id];
 }
 // saveDeckTitle
 export function saveDeckTitle (title) {
