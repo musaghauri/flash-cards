@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import _forOwn from 'lodash/forOwn'
 import { Button, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useNavigation, useNavigationState } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styled from "styled-components/native";
 import PressableButton from './components/PressableButton';
-import { getDecks } from './utils/api';
+import { getDecks, getDeck } from './utils/api';
 const Container = styled.View`
 	background: #fff;
 	height: auto;
@@ -38,11 +39,11 @@ const PriceCaption = styled.Text`
 
 const Card = (deck) => {
   const navigation = useNavigation();
-  return <TouchableOpacity onPress={() => navigation.navigate('Details', deck)}>
+  return <TouchableOpacity onPress={() => navigation.navigate('Details', { id: deck.title })}>
     <Container>
       <Content>
         <Title>{deck.title}</Title>
-        <PriceCaption>{deck.totalCards} cards</PriceCaption>
+        <PriceCaption>{deck.questions.length} cards</PriceCaption>
       </Content>
     </Container>
   </TouchableOpacity>
@@ -51,11 +52,13 @@ const Card = (deck) => {
 
 function DetailsScreen({ route, navigation }) {
   // const navigation = useNavigationState(s => s);
-  const { title, totalCards } = route.params
+  const { id } = route.params
+  const deck = getDeck(id);
+  // console.log({ deck })
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>{title}</Text>
-      <Text>{totalCards} Cards</Text>
+      <Text>{deck.title}</Text>
+      <Text>{deck?.questions?.length} Cards</Text>
       <PressableButton
         onPress={() => true}
         title='Add Card'
@@ -72,23 +75,31 @@ function DetailsScreen({ route, navigation }) {
 
 
 function DecksListScreen({ navigation }) {
-  const [decks, setDecks] = useState([]);
+  const [decks, setDecks] = useState({});
   const loadDecks = async () => {
-    const decks = await getDecks();
-    setDecks(decks||[{ title: "Udaci Cards", totalCards: 5}]);
+    const fetchedDecks = await getDecks();
+    setDecks(fetchedDecks||{ 
+      React: { 
+        title: "React", 
+        questions: [{},{},{}]
+      }
+    });
   }
 
   useEffect(() => {
     loadDecks();
   }, [])
+
+  const DECKS = [];
+  _forOwn(decks, (val, key) => {
+    DECKS.push(<Card key={`deck_${key}`} {...val} />)
+  });
   return (
     <View >
       <ScrollView>
-        {
-          decks.map((deck, i) => <Card key={`deck_${i}`} {...deck} />)
-        }
+        {DECKS}
       </ScrollView>
-    </View>
+    </View> 
   );
 }
 
