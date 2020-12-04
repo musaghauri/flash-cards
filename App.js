@@ -53,22 +53,21 @@ const Card = (deck) => {
 function DetailsScreen({ route, navigation }) {
   const [deck, setDeck] = useState({});
   const { id } = route.params
-  // console.log("deckdeckdeck",id, deck)
-  const loadDecks = async () => {
+  const loadDeck = async () => {
     let fetchedDeck = await getDeck(id);
     setDeck(fetchedDeck);
   }
 
   useEffect(() => {
-    loadDecks();
+    loadDeck();
   }, []);
 
   useEffect(() => {
     // Interval to update count
-   
+
     // Subscribe for the focus Listener
     const unsubscribe = navigation.addListener('focus', () => {
-      loadDecks();
+      loadDeck();
     });
 
     return () => {
@@ -86,7 +85,7 @@ function DetailsScreen({ route, navigation }) {
         title='Add Card'
       />
       <PressableButton
-        onPress={() => true}
+        onPress={() => navigation.navigate("StartQuiz", { title: deck.title })}
         title='Start Quiz'
         bgColor="black"
         color="white"
@@ -110,7 +109,7 @@ function DecksListScreen({ navigation }) {
 
   useEffect(() => {
     // Interval to update count
-   
+
     // Subscribe for the focus Listener
     const unsubscribe = navigation.addListener('focus', () => {
       loadDecks();
@@ -121,7 +120,7 @@ function DecksListScreen({ navigation }) {
       unsubscribe;
     };
   }, [navigation]);
-  
+
   const DECKS = [];
   _forOwn(decks, (val, key) => {
     DECKS.push(<Card key={`deck_${key}`} {...val} />)
@@ -228,14 +227,98 @@ function AddCardScreen({ route, navigation }) {
 }
 
 
+function StartQuizScreen({ route, navigation }) {
+  const { title } = route.params;
+  const [deck, setDeck] = useState({});
+  const [questionsRemaining, setQuestionsRemaining] = useState(0);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [quizComplete, setQuizComplete] = useState(false);
+  const loadDeck = async () => {
+    let fetchedDeck = await getDeck(title);
+    setDeck(fetchedDeck);
+    setQuestionsRemaining(fetchedDeck.questions.length);
+  }
+
+  useEffect(() => {
+    loadDeck();
+  }, []);
+
+
+  const checkAnswer = (answer) => {
+    setQuestionsRemaining(questionsRemaining - 1);
+    if (answer) setCorrectAnswers(correctAnswers + 1);
+    if (questionsRemaining === 1) setQuizComplete(true);
+  }
+  const restartQuiz = () => {
+    setQuestionsRemaining(deck.questions.length);
+    setCorrectAnswers(0);
+    setQuizComplete(false);
+    setShowAnswer(false);
+  }
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {
+        quizComplete ?
+          <>
+          <PressableButton
+            onPress={restartQuiz}
+            title='Restart Quiz'
+            bgColor="white"
+            color="black"
+          />
+          <PressableButton
+            onPress={() => navigation.goBack()}
+            title='Back to Deck'
+            bgColor="black"
+            color="white"
+          />
+          </>
+          :
+          <>
+            <Text>{questionsRemaining} Qs Remaining</Text>
+            {deck.questions && <Text>{
+              showAnswer ?
+                deck?.questions[questionsRemaining - 1]?.answer
+                :
+                deck?.questions[questionsRemaining - 1]?.question
+            }
+            </Text>}
+            <PressableButton
+              onPress={() => setShowAnswer(!showAnswer)}
+              title='Show Answer'
+              bgColor="blue"
+              color="white"
+            />
+            <PressableButton
+              onPress={() => checkAnswer(true)}
+              title='Correct'
+              bgColor="green"
+              color="white"
+            />
+            <PressableButton
+              onPress={() => checkAnswer(false)}
+              title='Incorrect'
+              bgColor="red"
+              color="white"
+            />
+          </>
+      }
+
+    </View>
+  );
+}
+
+
 const DecksListStack = createStackNavigator();
 
 function DecksListStackScreen() {
   return (
     <DecksListStack.Navigator>
-      <DecksListStack.Screen options={{ unmountOnBlur: true }} name="Decks" component={DecksListScreen} />
-      <DecksListStack.Screen options={{ unmountOnBlur: true }} name="Details" component={DetailsScreen} />
-      <DecksListStack.Screen options={{ unmountOnBlur: true }} name="AddCard" component={AddCardScreen} />
+      <DecksListStack.Screen name="Decks" component={DecksListScreen} />
+      <DecksListStack.Screen name="Details" component={DetailsScreen} />
+      <DecksListStack.Screen name="AddCard" component={AddCardScreen} />
+      <DecksListStack.Screen name="StartQuiz" component={StartQuizScreen} />
     </DecksListStack.Navigator>
   );
 }
