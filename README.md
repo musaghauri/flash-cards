@@ -1,4 +1,8 @@
-# Tailwind CSS example
+# Flash Cards
+
+## Description
+
+Flash Cards was built for the Udacity React Nano Degree. This project is a flash cards app that allows you to create, group and maintain the decks and take quiz on those decks. It is built using React Native.
 
 <p>
   <!-- iOS -->
@@ -13,9 +17,3 @@
 
 - Install with `yarn` or `npm install`.
 - Run `expo start` to try it out.
-
-## 📝 Notes
-
-- This example using the [`tailwind-rn`](https://github.com/vadimdemedes/tailwind-rn) library to allow you to use [Tailwind CSS](https://tailwindcss.com/) in React Native.
-- You can even customize it to use your own styles or colors. Read more about that [here](https://github.com/vadimdemedes/tailwind-rn#customization).
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs/utility-first).
