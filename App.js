@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { Button, Text, View, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Button, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useNavigation, useNavigationState } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styled from "styled-components/native";
-import PressableButton from './components/PressableButton'
+import PressableButton from './components/PressableButton';
+import { getDecks } from './utils/api';
 const Container = styled.View`
 	background: #fff;
 	height: auto;
@@ -35,11 +36,26 @@ const PriceCaption = styled.Text`
 	margin-top: 4px;
 `;
 
-const Card = ({ title = "Udaci Cards", totalCards = 5}) => (
-	<Container>
-		<Content>
-			<Title>{title}</Title>
-			<PriceCaption>{totalCards} cards</PriceCaption>
+const Card = (deck) => {
+  const navigation = useNavigation();
+  return <TouchableOpacity onPress={() => navigation.navigate('Details', deck)}>
+    <Container>
+      <Content>
+        <Title>{deck.title}</Title>
+        <PriceCaption>{deck.totalCards} cards</PriceCaption>
+      </Content>
+    </Container>
+  </TouchableOpacity>
+};
+
+
+function DetailsScreen({ route, navigation }) {
+  // const navigation = useNavigationState(s => s);
+  const { title, totalCards } = route.params
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>{title}</Text>
+      <Text>{totalCards} Cards</Text>
       <PressableButton
         onPress={() => true}
         title='Add Card'
@@ -50,44 +66,27 @@ const Card = ({ title = "Udaci Cards", totalCards = 5}) => (
         bgColor="black"
         color="white"
       />
-		</Content>
-	</Container>
-);
-
-
-function DetailsScreen({ route, navigation }) {
-  // const navigation = useNavigationState(s => s);
-  const { title, totalCards } = route.params
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>{JSON.stringify(navigation)}</Text>
-      <Text>{title}</Text>
-      <Text>{totalCards} Cards</Text>
     </View>
   );
 }
 
 
 function DecksListScreen({ navigation }) {
+  const [decks, setDecks] = useState([]);
+  const loadDecks = async () => {
+    const decks = await getDecks();
+    setDecks(decks||[{ title: "Udaci Cards", totalCards: 5}]);
+  }
+
+  useEffect(() => {
+    loadDecks();
+  }, [])
   return (
     <View >
-    <View style={{ alignItems: "center" }}>
-      <Text >Decks List screen</Text>
-    </View>
       <ScrollView>
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Button
-          title="Go to Details"
-          onPress={() => navigation.navigate('Details', { title: "Udaci Cards", totalCards: 5 })}
-        />
+        {
+          decks.map((deck, i) => <Card key={`deck_${i}`} {...deck} />)
+        }
       </ScrollView>
     </View>
   );
