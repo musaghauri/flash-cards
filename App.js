@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import _forOwn from 'lodash/forOwn'
-import { Button, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Button, Text, View, ScrollView, TouchableOpacity, TouchableWithoutFeedback, TextInput, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { NavigationContainer, useNavigation, useNavigationState } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styled from "styled-components/native";
 import PressableButton from './components/PressableButton';
-import { getDecks, getDeck } from './utils/api';
+import { getDecks, getDeck, saveDeckTitle } from './utils/api';
 const Container = styled.View`
 	background: #fff;
 	height: auto;
@@ -77,13 +77,9 @@ function DetailsScreen({ route, navigation }) {
 function DecksListScreen({ navigation }) {
   const [decks, setDecks] = useState({});
   const loadDecks = async () => {
-    const fetchedDecks = await getDecks();
-    setDecks(fetchedDecks||{ 
-      React: { 
-        title: "React", 
-        questions: [{},{},{}]
-      }
-    });
+    let fetchedDecks = await getDecks();
+    fetchedDecks = JSON.parse(fetchedDecks);
+    setDecks(fetchedDecks);
   }
 
   useEffect(() => {
@@ -94,23 +90,56 @@ function DecksListScreen({ navigation }) {
   _forOwn(decks, (val, key) => {
     DECKS.push(<Card key={`deck_${key}`} {...val} />)
   });
+  
   return (
     <View >
       <ScrollView>
         {DECKS}
       </ScrollView>
-    </View> 
+    </View>
   );
 }
 
 function AddDeckScreen({ navigation }) {
+  const [deckName, setDeckName] = useState('');
+
+  const addDeck = async () => {
+    await saveDeckTitle(deckName);
+    setDeckName('');
+    navigation.navigate('DecksStack')
+  }
+  const Title = styled.Text`
+    font-size: 18px
+  `;
+
+  const TextField = styled.TextInput`
+    height: 40px;
+    border-color: #000000;
+    border-width: 1px;
+    width: 100%;
+    border-radius: 3px;
+    margin: 12px 0;
+  `;
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Add Deck screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
-      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Title>What is the title of your new Deck?</Title>
+            <TextField value={deckName} onChangeText={text => setDeckName(text)} placeholder="Deck Title" />
+            <View>
+              <PressableButton
+                onPress={addDeck}
+                title='Submit'
+                bgColor="black"
+                color="white"
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -132,7 +161,6 @@ function AddDeckStackScreen() {
   return (
     <AddDeckStack.Navigator>
       <AddDeckStack.Screen name="New Deck" component={AddDeckScreen} />
-      <AddDeckStack.Screen name="Details" component={DetailsScreen} />
     </AddDeckStack.Navigator>
   );
 }
@@ -143,8 +171,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Decks" component={DecksListStackScreen} />
-        <Tab.Screen name="New Deck" component={AddDeckStackScreen} />
+        <Tab.Screen options={{ unmountOnBlur: true }}  name="DecksStack" component={DecksListStackScreen} />
+        <Tab.Screen name="NewDeckStack" component={AddDeckStackScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
