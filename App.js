@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styled from "styled-components/native";
 import PressableButton from './components/PressableButton';
 import { getDecks, getDeck, saveDeckTitle, addCardToDeck } from './utils/api';
+import { setLocalNotification } from './utils/helpers';
 const Container = styled.View`
 	background: #fff;
 	height: auto;
@@ -337,6 +338,9 @@ function AddDeckStackScreen() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  useEffect(() => {
+    setLocalNotification();
+  }, [])
   return (
     <NavigationContainer>
       <Tab.Navigator>
