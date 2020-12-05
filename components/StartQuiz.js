@@ -24,6 +24,7 @@ function StartQuizScreen({ route, navigation }) {
   
     const checkAnswer = (answer) => {
       setQuestionsRemaining(questionsRemaining - 1);
+      setShowAnswer(false);
       if (answer) setCorrectAnswers(correctAnswers + 1);
       if (questionsRemaining === 1) setQuizComplete(true);
     }

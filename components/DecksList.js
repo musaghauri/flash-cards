@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import _forOwn from 'lodash/forOwn'
-import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import styled from "styled-components/native";
@@ -84,11 +84,11 @@ const Card = (deck) => {
     });
   
     return (
-      <View >
+      <SafeAreaView>
         <ScrollView>
           {DECKS}
         </ScrollView>
-      </View>
+      </SafeAreaView>
     );
   }
 
