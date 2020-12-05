@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import _forOwn from 'lodash/forOwn'
-import { Text, View } from 'react-native';
+import { Text, SafeAreaView } from 'react-native';
 import PressableButton from './PressableButton';
 import { getDeck } from '../utils/api';
 
@@ -32,7 +32,7 @@ function DetailsScreen({ route, navigation }) {
   }, [navigation]);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>{deck.title}</Text>
       <Text>{deck?.questions?.length} Cards</Text>
       <PressableButton
@@ -45,7 +45,7 @@ function DetailsScreen({ route, navigation }) {
         bgColor="black"
         color="white"
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
