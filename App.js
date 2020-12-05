@@ -32,6 +32,8 @@ function AddDeckStackScreen() {
     <AddDeckStack.Navigator>
       <AddDeckStack.Screen name="New Deck" component={AddDeckScreen} />
       <DecksListStack.Screen name="Details" component={DetailsScreen} />
+      <DecksListStack.Screen name="AddCard" component={AddCardScreen} />
+      <DecksListStack.Screen name="StartQuiz" component={StartQuizScreen} />
     </AddDeckStack.Navigator>
   );
 }
