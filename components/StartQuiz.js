@@ -3,6 +3,7 @@ import _forOwn from 'lodash/forOwn'
 import { Text, View } from 'react-native';
 import PressableButton from './PressableButton';
 import { getDeck } from '../utils/api';
+import { setLocalNotification, clearLocalNotification } from '../utils/helpers';
 
 function StartQuizScreen({ route, navigation }) {
     const { title } = route.params;
@@ -26,7 +27,11 @@ function StartQuizScreen({ route, navigation }) {
       setQuestionsRemaining(questionsRemaining - 1);
       setShowAnswer(false);
       if (answer) setCorrectAnswers(correctAnswers + 1);
-      if (questionsRemaining === 1) setQuizComplete(true);
+      if (questionsRemaining === 1) {
+          clearLocalNotification();
+          setLocalNotification();
+          setQuizComplete(true);
+      }
     }
     const restartQuiz = () => {
       setQuestionsRemaining(deck.questions.length);
