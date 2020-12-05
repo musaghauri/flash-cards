@@ -42,6 +42,7 @@ function AddCardScreen({ route, navigation }) {
                   title='Submit'
                   bgColor="black"
                   color="white"
+                  disabled={!question || !answer}
                 />
               </View>
             </View>

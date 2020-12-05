@@ -15,8 +15,8 @@ const ButtonText = styled.Text`
   text-align: center;
   color: ${props => props.color};
 `;
-const PressableButton = ({ onPress, bgColor = "white", color = "black", borderColor = "black", title }) => (
-  <ButtonContainer onPress={onPress} bgColor={bgColor} borderColor={borderColor}>
+const PressableButton = ({ disabled = false, onPress, bgColor = "white", color = "black", borderColor = "black", title }) => (
+  <ButtonContainer disabled={disabled} onPress={onPress} bgColor={bgColor} borderColor={borderColor}>
     <ButtonText color={color}>{title}</ButtonText>
   </ButtonContainer>
 );

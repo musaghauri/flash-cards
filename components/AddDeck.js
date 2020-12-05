@@ -42,6 +42,7 @@ function AddDeckScreen({ navigation }) {
                   title='Submit'
                   bgColor="black"
                   color="white"
+                  disabled={!deckName}
                 />
               </View>
             </View>
