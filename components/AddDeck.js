@@ -6,6 +6,18 @@ import styled from "styled-components/native";
 import PressableButton from './PressableButton';
 import { saveDeckTitle } from '../utils/api';
 
+const Title = styled.Text`
+  font-size: 18px
+`;
+  
+const TextField = styled.TextInput`
+  height: 40px;
+  border-color: #000000;
+  border-width: 1px;
+  width: 100%;
+  border-radius: 3px;
+  margin: 12px 0;
+`;
 
 function AddDeckScreen({ navigation }) {
     const [deckName, setDeckName] = useState('');
@@ -15,18 +27,7 @@ function AddDeckScreen({ navigation }) {
       setDeckName('');
       navigation.navigate('Details', { id: deckName })
     }
-    const Title = styled.Text`
-      font-size: 18px
-    `;
-  
-    const TextField = styled.TextInput`
-      height: 40px;
-      border-color: #000000;
-      border-width: 1px;
-      width: 100%;
-      border-radius: 3px;
-      margin: 12px 0;
-    `;
+    
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <KeyboardAvoidingView
