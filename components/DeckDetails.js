@@ -40,6 +40,7 @@ function DetailsScreen({ route, navigation }) {
         title='Add Card'
       />
       <PressableButton
+        disabled={!deck?.questions?.length}
         onPress={() => navigation.navigate("StartQuiz", { title: deck.title })}
         title='Start Quiz'
         bgColor="black"
